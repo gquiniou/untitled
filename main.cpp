@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <GL/glew.h>
@@ -11,7 +12,7 @@ const GLchar* vertexSource = R"glsl(
 
     void main()
     {
-        gl_Position = vec4(position, 0.0, 1.0);
+        gl_Position = vec4(position.x, position.y, 0.0, 1.0);
     }
 )glsl";
 
@@ -26,6 +27,20 @@ const GLchar* fragmentSource = R"glsl(
     }
 )glsl";
 
+void dumpShaderLog(GLuint shader) {
+    GLint status;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if (status != GL_TRUE) {
+        std::cout << "Shader compile status: " << status << std::endl;
+    }
+    const size_t bufsize = 512;
+    char buffer[bufsize];
+    glGetShaderInfoLog(shader, sizeof(buffer), nullptr, buffer);
+    if (strnlen(buffer, bufsize) > 0) {
+        std::cout << "Shader compile log: " << std::endl << buffer << std::endl;
+    }
+}
+
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -34,7 +49,7 @@ int main() {
     settings.depthBits = 24;
     settings.stencilBits = 8;
     settings.majorVersion = 3;
-    settings.minorVersion = 2;
+    settings.minorVersion = 3;
 
     sf::Window window(sf::VideoMode(800, 600, 32), "untitled", sf::Style::Close, settings);
     window.setMouseCursorVisible(false);
@@ -46,7 +61,8 @@ int main() {
     float myVerctices[] = {
      0.0f,  0.5f, // Vertex 1 (X, Y)
      0.5f, -0.5f, // Vertex 2 (X, Y)
-    -0.5f, -0.5f  // Vertex 3 (X, Y)        
+    -0.5f, -0.5f,  // Vertex 3 (X, Y)        
+  
     };
 
 
@@ -54,29 +70,20 @@ int main() {
     glGenVertexArrays(1, &myVAO);
     glBindVertexArray(myVAO);
 
-    GLuint myBuffer;
-    glGenBuffers(1, &myBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, myBuffer);
+    GLuint myVBO;
+    glGenBuffers(1, &myVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, myVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(myVerctices), myVerctices, GL_STATIC_DRAW);
 
     GLuint myVertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(myVertexShader, 1, &vertexSource, nullptr);
     glCompileShader(myVertexShader);
-    GLint status;
-    glGetShaderiv(myVertexShader, GL_COMPILE_STATUS, &status);
-    std::cout << "Vertex Shader compile status: " << status << std::endl;
-    char buffer[512];
-    glGetShaderInfoLog(myVertexShader, sizeof(buffer), nullptr, buffer);
-    std::cout << "Vertext shader ompile log: " << buffer << std::endl;
-
+    dumpShaderLog(myVertexShader);
 
     GLuint myFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(myFragmentShader, 1, &fragmentSource, nullptr);
     glCompileShader(myFragmentShader);
-    glGetShaderiv(myVertexShader, GL_COMPILE_STATUS, &status);
-    std::cout << "Fragment shadder compile status: " << status << std::endl;
-    glGetShaderInfoLog(myVertexShader, sizeof(buffer), nullptr, buffer);
-    std::cout << "Fragment shader compile log: " << buffer << std::endl;
+    dumpShaderLog(myFragmentShader);
 
     GLuint myProgram = glCreateProgram();
     glAttachShader(myProgram, myVertexShader);
@@ -89,9 +96,8 @@ int main() {
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(posAttrib);
 
-
-
     while (window.isOpen()) {
+
         sf::Event event{};
         while (window.pollEvent(event)) {
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) {
@@ -103,12 +109,13 @@ int main() {
                 glViewport(0, 0, event.size.width, event.size.height);
             }
         }
-        //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
         window.display();
     }
     return 0;
 }
+
