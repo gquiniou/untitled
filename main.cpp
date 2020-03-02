@@ -61,7 +61,7 @@ int main() {
     settings.majorVersion = 3;
     settings.minorVersion = 3;
 
-    sf::Window window(sf::VideoMode(800, 600, 32), "untitled", sf::Style::Close, settings);
+    sf::Window window(sf::VideoMode(800, 600, 32), "untitled", sf::Style::Resize, settings);
     window.setMouseCursorVisible(false);
     window.setVerticalSyncEnabled(true);
 
@@ -76,15 +76,16 @@ int main() {
     };
 
 
-    GLuint myVAO;
-    glGenVertexArrays(1, &myVAO);
-    glBindVertexArray(myVAO);
+    // GLuint myVAO;
+    // glGenVertexArrays(1, &myVAO);
+    // glBindVertexArray(myVAO);
 
     GLuint myVBO;
     glGenBuffers(1, &myVBO);
     glBindBuffer(GL_ARRAY_BUFFER, myVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(myVerctices), myVerctices, GL_STATIC_DRAW);
 
+  
     GLuint elements[] = {
         0, 1, 2,
         2, 3, 0
@@ -123,15 +124,16 @@ int main() {
     glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
 
     //int i = 0;
-    while (window.isOpen()) {
+    bool running = true;
+    while (running) {
 
         sf::Event event{};
         while (window.pollEvent(event)) {
             if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) {
-                window.close();
+                running = false;                
             }
             if (event.type == sf::Event::Closed) {
-                window.close();
+                running = false;
             } else if (event.type == sf::Event::Resized) {
                 glViewport(0, 0, event.size.width, event.size.height);
             }
@@ -147,6 +149,18 @@ int main() {
 
         window.display();
     }
+
+
+    glDeleteProgram(myProgram);
+    glDeleteShader(myFragmentShader);
+    glDeleteShader(myVertexShader);
+
+    glDeleteBuffers(1, &myEBO);
+    glDeleteBuffers(1, &myVBO);
+
+    //glDeleteVertexArrays(1, &myVAO);
+
+    window.close();
     return 0;
 }
 
