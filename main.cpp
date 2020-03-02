@@ -69,9 +69,10 @@ int main() {
     glewInit();
     
     float myVerctices[] = {
-     0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
-     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
+    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Top-left
+     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // Top-right
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
+    -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // Bottom-left
     };
 
 
@@ -83,6 +84,15 @@ int main() {
     glGenBuffers(1, &myVBO);
     glBindBuffer(GL_ARRAY_BUFFER, myVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(myVerctices), myVerctices, GL_STATIC_DRAW);
+
+    GLuint elements[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+    GLuint myEBO;
+    glGenBuffers(1, &myEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, myEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
     GLuint myVertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(myVertexShader, 1, &vertexSource, nullptr);
@@ -112,7 +122,7 @@ int main() {
     GLint uniColor = glGetUniformLocation(myProgram, "triangleColor");
     glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
 
-    int i = 0;
+    //int i = 0;
     while (window.isOpen()) {
 
         sf::Event event{};
@@ -129,10 +139,11 @@ int main() {
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     //glUniform3f(uniColor, 1.0f / (i++%50), 0.0f, 0.0f);
-    i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
+    //i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
 
         window.display();
     }
