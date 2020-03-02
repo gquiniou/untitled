@@ -7,27 +7,34 @@
 #include <SFML/OpenGL.hpp>
 
 const GLchar* vertexSource = R"glsl(
-    #version 150 core
+#version 150 core
 
-    in vec2 position;
+in vec2 position;
+in vec3 color;
 
-    void main()
-    {
-        gl_Position = vec4(position.x, position.y, 0.0, 1.0);
-    }
+out vec3 Color;
+
+void main()
+{
+    Color = color;
+    gl_Position = vec4(position, 0.0, 1.0);
+}
+
 )glsl";
 
 const GLchar* fragmentSource = R"glsl(
-    #version 150 core
 
-    uniform vec3 triangleColor;
-    out vec4 outColor;
+#version 150 core
 
-    void main()
-    {
-       outColor = vec4(triangleColor, 1.0);
-       // outColor = vec4(1.0, 1.0, 1.0, 1.0);
-    }
+in vec3 Color;
+
+out vec4 outColor;
+
+void main()
+{
+    outColor = vec4(Color, 1.0);
+}
+
 )glsl";
 
 void dumpShaderLog(GLuint shader) {
@@ -62,9 +69,9 @@ int main() {
     glewInit();
     
     float myVerctices[] = {
-     0.0f,  0.5f, // Vertex 1 (X, Y)
-     0.5f, -0.5f, // Vertex 2 (X, Y)
-    -0.5f, -0.5f,  // Vertex 3 (X, Y)        
+     0.0f,  0.5f, 1.0f, 0.0f, 0.0f, // Vertex 1: Red
+     0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // Vertex 2: Green
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f  // Vertex 3: Blue
     };
 
 
@@ -95,8 +102,12 @@ int main() {
     glUseProgram(myProgram);
 
     GLint posAttrib = glGetAttribLocation(myProgram, "position");
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(float)*5, 0);
     glEnableVertexAttribArray(posAttrib);
+
+    GLint colAttrib = glGetAttribLocation(myProgram, "color");
+    glEnableVertexAttribArray(colAttrib);
+    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
 
     GLint uniColor = glGetUniformLocation(myProgram, "triangleColor");
     glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
