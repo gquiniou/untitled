@@ -26,13 +26,19 @@ const GLchar* fragmentSource = R"glsl(
 
 #version 150 core
 
+uniform vec3 multiplier;
 in vec3 Color;
 
 out vec4 outColor;
 
 void main()
 {
-    outColor = vec4(Color, 1.0);
+    outColor = vec4(Color.r*multiplier.r, Color.g*multiplier.g, Color.b*multiplier.b, 1.0);  
+/*    outColor = vec4((Color.r*multiplier.r + Color.g*multiplier.g + Color.b*multiplier.b) / 3.0,  
+                    (Color.r*multiplier.r + Color.g*multiplier.g + Color.b*multiplier.b) / 3.0,  
+                    (Color.r*multiplier.r + Color.g*multiplier.g + Color.b*multiplier.b) / 3.0,  
+                    1.0);
+*/
 }
 
 )glsl";
@@ -120,10 +126,14 @@ int main() {
     glEnableVertexAttribArray(colAttrib);
     glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
 
-    GLint uniColor = glGetUniformLocation(myProgram, "triangleColor");
-    glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
+    //GLint uniColor = glGetUniformLocation(myProgram, "triangleColor");
+    //glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
 
-    //int i = 0;
+    GLint uniMul = glGetUniformLocation(myProgram, "multiplier");
+    //glUniform3f(uniMul, 0.3f, 0.59f, 0.11f);
+    glUniform3f(uniMul, 0.33f, 0.33f, 0.33f);
+
+    int i = 0;
     bool running = true;
     while (running) {
 
@@ -143,6 +153,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        i+=2; glUniform3f(uniMul, 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180));
 
     //glUniform3f(uniColor, 1.0f / (i++%50), 0.0f, 0.0f);
     //i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
