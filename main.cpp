@@ -59,7 +59,7 @@ void dumpShaderLog(GLuint shader) {
 
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Hello, World!!" << std::endl;
 
     sf::ContextSettings settings;
     settings.depthBits = 24;
@@ -157,7 +157,7 @@ int main() {
         i+=2; glUniform3f(uniMul, 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180));
 
     //glUniform3f(uniColor, 1.0f / (i++%50), 0.0f, 0.0f);
-    //i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
+   // i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
 
         window.display();
     }

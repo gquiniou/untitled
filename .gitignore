@@ -2,6 +2,8 @@
 /cmake-build-debug/
 CMakeCache.txt
 /CMakeFiles/
+/build/
+/build.old/
 Makefile
 cmake_install.cmake
 compile_commands.json
