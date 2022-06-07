@@ -74,25 +74,19 @@ int main() {
     glewExperimental = GL_TRUE;
     glewInit();
     
-    float myVerctices[] = {
+    float myVertices[] = {
     -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Top-left
      0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // Top-right
      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // Bottom-right
     -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // Bottom-left
     };
 
-
-    // GLuint myVAO;
-    // glGenVertexArrays(1, &myVAO);
-    // glBindVertexArray(myVAO);
-
     GLuint myVBO;
     glGenBuffers(1, &myVBO);
     glBindBuffer(GL_ARRAY_BUFFER, myVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(myVerctices), myVerctices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(myVertices), myVertices, GL_STATIC_DRAW);
 
-  
-    GLuint elements[] = {
+     GLuint elements[] = {
         0, 1, 2,
         2, 3, 0
     };
@@ -126,11 +120,7 @@ int main() {
     glEnableVertexAttribArray(colAttrib);
     glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2*sizeof(float)));
 
-    //GLint uniColor = glGetUniformLocation(myProgram, "triangleColor");
-    //glUniform3f(uniColor, 1.0f, 0.0f, 0.0f);
-
     GLint uniMul = glGetUniformLocation(myProgram, "multiplier");
-    //glUniform3f(uniMul, 0.3f, 0.59f, 0.11f);
     glUniform3f(uniMul, 0.33f, 0.33f, 0.33f);
 
     int i = 0;
@@ -151,17 +141,13 @@ int main() {
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        i+=2; glUniform3f(uniMul, 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180));
-
-    //glUniform3f(uniColor, 1.0f / (i++%50), 0.0f, 0.0f);
-   // i+=2; glUniform3f(uniColor, 0.5+0.5*cos(i*M_PI/180), 0.0f, 0.0f);
+        i+=2; 
+        glUniform3f(uniMul, 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180), 0.5+0.5*cos(i*M_PI/180));
 
         window.display();
     }
-
 
     glDeleteProgram(myProgram);
     glDeleteShader(myFragmentShader);
@@ -169,8 +155,6 @@ int main() {
 
     glDeleteBuffers(1, &myEBO);
     glDeleteBuffers(1, &myVBO);
-
-    //glDeleteVertexArrays(1, &myVAO);
 
     window.close();
     return 0;
